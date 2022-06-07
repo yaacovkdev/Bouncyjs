@@ -5,6 +5,7 @@ let screentype;
 
 let ObstacleArray = [];
 
+//Obstacle class that carries information about individual obstacle
 class Obstacle {
     constructor(y1, y2, width, offset) {
         this.y1 = y1;
@@ -16,17 +17,17 @@ class Obstacle {
         this.passed = false;
     }
 
+	//moves the x value
     progressMove(delta){
         this.x -= delta;
     }
 
+	//sets position
     setPos(pos){
         this.x = pos;
     }
 
-    
-
-    //draw the rectangle
+    //draws the 2 rectangle for obstacles
     drawit(){
         //draws top and bottom rectangles
         fill(255);
@@ -35,6 +36,7 @@ class Obstacle {
     }
 }
 
+//initialization of the drawing
 function setup(){
     c = createCanvas(600,600);
     c.id("canvas0");
@@ -47,9 +49,9 @@ function setup(){
     score = 0;
     textSize(40);
     textFont('Times New Roman');
-	
 }
 
+//game loop
 function draw() {
 	if(screentype == 0){
 		gameStart();
@@ -62,6 +64,7 @@ function draw() {
     
 }
 
+//displays the start of the game screen
 function gameStart(){
 	background(100);
 	push();
@@ -74,6 +77,7 @@ function gameStart(){
 	noLoop();
 }
 
+//function to modify all the logic values of the game
 function gameProgress(){
     fill(0);
     ellipse(x, y, RADIUS*2, RADIUS*2);
@@ -88,19 +92,20 @@ function gameProgress(){
     checkInterval();
 }
 
+//draws the current score at the top of the screen
 function drawScore(){
-   
     fill(255);
     text('Score: ' + score, 3, 35);
-    
 }
 
+//analyses the collsions and stops the game if there is a collision of the main object
 function checkCollision(){
     if(y >= 600 || y <= 0 || checkObstacles()){
         gameOver();
     }
 }
 
+//draws the game over screen and stops frames
 function gameOver(){
     
     background(0);
@@ -114,9 +119,11 @@ function gameOver(){
     
     screentype = 2;
     
+	//frame stop
     noLoop();
 }
 
+//check interval to see if it needs to add/remove obstacle from the memory
 function checkInterval(){
     if(ObstacleArray[ObstacleArray.length - 1].x <= STARTX){
         addObstacle();
@@ -135,6 +142,7 @@ function checkInterval(){
     
 }
 
+//functions that lead to the keypress
 function mousePressed(){
 	keyPressed();
 }
@@ -143,6 +151,7 @@ function touchStarted(){
 	keyPressed();
 }
 
+//on key press it either switches screens or adds velocity to the ball as a control method
 function keyPressed(){
 	if(screentype == 2){
 		screentype = 0;
@@ -162,12 +171,13 @@ function keyPressed(){
     v = 4 * multiplier;
 }
 
-
+//first 2 set obstacles
 function initObstacles(){
     ObstacleArray.push(new Obstacle(150, 450, 25, 0));
     ObstacleArray.push(new Obstacle(150, 450, 25, 200));
 }
 
+//adds a random obstacle
 function addObstacle(){
     var lowerlimit = 100;
     var upperlimit = 400;
@@ -178,6 +188,7 @@ function addObstacle(){
 
 }
 
+//draws all the obstacles in the memory
 function drawObstacles(){
     
     for(var i = 0; i < ObstacleArray.length; i++){
@@ -185,16 +196,19 @@ function drawObstacles(){
     }
 } 
 
+//checks if there is a collision with any obstacle
 function checkObstacles(){
     for (var i = 0; i< ObstacleArray.length; i++){
         var getobj = ObstacleArray[i];
 
+		//optimizes checks only for obstacles that are in the x range of the ball
         if((getobj.x <= x+RADIUS) && (getobj.x+getobj.width >= x-RADIUS) && obstacleCollide(x, y, getobj.x, getobj.y, getobj.y1, getobj.y2, getobj.width, getobj.height))
             return true;
     }
     return false;
 }
 
+//breaks down the rectangles of the obstacle to check it they collide
 function obstacleCollide(xc, yc, xo, yo, y1, y2, width, height){
     //turn all starting points of the rectangles from top left
     var toprect = {
@@ -218,6 +232,7 @@ function obstacleCollide(xc, yc, xo, yo, y1, y2, width, height){
 
 //Geeks For Geeks
 //Source: https://www.geeksforgeeks.org/check-if-any-point-overlaps-the-given-circle-and-rectangle/
+//very optimized code to determine if the circle shape and rectangle shape overlap
 function circleRectOverlap(rad, xc, yc, x1, y1, x2, y2){
     var xn = Math.max(x1, Math.min(xc, x2));
     var yn = Math.max(y1, Math.min(yc, y2));
