@@ -1,8 +1,9 @@
 let c, x = 150, y = 300, v = 0, gamespeed = 90;
 const G = -9.81, RADIUS = 10, STARTX = 600;
-let fps = 30, multiplier = 8, score;
+let fps = 30, frameCounter, multiplier = 8, score;
 let screentype;
 
+//array of Obstacle objects that store values needed to rendere them on the canvas
 let ObstacleArray = [];
 
 //Obstacle class that carries information about individual obstacle
@@ -47,6 +48,7 @@ function setup(){
     initObstacles();
     screentype = 0;
     score = 0;
+    frameCounter = 0;
     textSize(40);
     textFont('Times New Roman');
 }
@@ -90,6 +92,7 @@ function gameProgress(){
 
     checkCollision();
     checkInterval();
+    increaseDifficulty();
 }
 
 //draws the current score at the top of the screen
@@ -142,6 +145,17 @@ function checkInterval(){
     
 }
 
+function increaseDifficulty(){
+    if(gamespeed >= 200) return;
+    frameCounter++;
+
+    if(frameCounter == 120){
+        frameCounter = 0;
+        gamespeed++;
+        print(gamespeed);
+    }
+}
+
 //functions that lead to the keypress
 function mousePressed(){
 	keyPressed();
@@ -158,17 +172,21 @@ function keyPressed(){
 		gameStart();
 		return;
 	}
+
+    //Reset game Values to starting
     if(screentype != 1){
-		
         score = 0;
         x = 150, y = 300, v = 0;
         ObstacleArray = [];
         initObstacles();
         screentype = 1;
+        frameCounter = 0;
+        gamespeed = 90;
 		loop();
 		return;
     }
-    v = 4 * multiplier;
+
+    v = 4.5 * multiplier;
 }
 
 //first 2 set obstacles
@@ -182,7 +200,7 @@ function addObstacle(){
     var lowerlimit = 100;
     var upperlimit = 400;
     var gatesize = lowerlimit + Math.floor(Math.random() * (upperlimit-lowerlimit));
-    var gateroof = 50 + Math.floor(Math.random() * c.height - lowerlimit - 50);
+    var gateroof = 50 + (Math.floor(Math.random() * (c.height - lowerlimit - 50)));
 
     ObstacleArray.push(new Obstacle(gateroof, gateroof+gatesize, 25, 200));
 
